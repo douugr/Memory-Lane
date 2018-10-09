@@ -5,7 +5,7 @@ using UnityEngine;
 public class Card : MonoBehaviour {
 
     [SerializeField]
-    private GameObject cardTras;
+    public GameObject cardTras;
     [SerializeField]
     public GameManager gameManager;
 
@@ -13,7 +13,7 @@ public class Card : MonoBehaviour {
     {
         if(cardTras.activeSelf && gameManager.podeRevelar)
         {
-            cardTras.SetActive(false);
+            revelaCard(cardTras);
             gameManager.CardRevelado(this);
         }
         gameObject.GetComponent<AudioSource>().Play();
@@ -33,6 +33,10 @@ public class Card : MonoBehaviour {
     public void voltaTras()
     {
         cardTras.SetActive(true);
+    }
+    public void revelaCard(GameObject card){
+        card.SetActive(false);
+
     }
 
 }

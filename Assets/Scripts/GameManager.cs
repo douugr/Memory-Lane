@@ -23,9 +23,14 @@ public class GameManager : MonoBehaviour {
     private GameObject winScreen;
     [SerializeField]
     private Text pontuacaoFinal;
+    [SerializeField]
+    private Text nomeJogador;
+
+    private int combinacoes = 0;
 
     private void Start()
     {
+        nomeJogador.text = "Jogador: " + PlayerPrefs.GetString("Nome");
         winScreen.SetActive(false);
         Vector3 posInicial = primeiroCard.transform.position;
         List<int> list = new List<int>();
@@ -59,8 +64,17 @@ public class GameManager : MonoBehaviour {
                 float posX = (offsetX * i) + posInicial.x;
                 float posY = (offsetY * a) + posInicial.y;
                 card.transform.position = new Vector3(posX, posY, posInicial.z);
+                StartCoroutine(MostraCards(card));
+
+
             }
         }
+    }
+
+    IEnumerator MostraCards(Card card){
+        card.revelaCard(card.cardTras);
+        yield return new WaitForSeconds(2f);
+        card.voltaTras();
     }
 
     private int[] EmbaralhaArray(int[] numeros)
@@ -107,11 +121,13 @@ public class GameManager : MonoBehaviour {
     {
         if(_primeiroRevelado.id == _segundoRevelado.id)
         {
-            _pontuacao++;
+            _pontuacao += 2;
+            combinacoes++;
+
             pontosLabel.text = _pontuacao.ToString();
             sons[0].Play();
 
-            if (_pontuacao == ((cenarioLinhas * cenarioColunas) / 2))
+            if (combinacoes == ((cenarioLinhas * cenarioColunas) / 2))
             {
                 winScreen.SetActive(true);
                 pontuacaoFinal.text = "Sua pontuação foi: \n" + _pontuacao + " pontos";
@@ -121,9 +137,17 @@ public class GameManager : MonoBehaviour {
         else
         {
             sons[1].Play();
+            _pontuacao -= 1;
+
+            if (_pontuacao < 0)
+            {
+                _pontuacao = 0;
+            }
+            pontosLabel.text = _pontuacao.ToString();
             yield return new WaitForSeconds(0.5f);
             _primeiroRevelado.voltaTras();
             _segundoRevelado.voltaTras();
+           
         }
         _primeiroRevelado = null;
         _segundoRevelado = null;
